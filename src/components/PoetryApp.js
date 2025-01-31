@@ -12,7 +12,7 @@ export default function PoetryApp() {
   const [savedPoems, setSavedPoems] = useState([]);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
 
-  // Load saved poems from local storage on mount
+  // Load and save poems from/to local storage
   useEffect(() => {
     const loadSavedPoems = async () => {
       try {
@@ -24,11 +24,7 @@ export default function PoetryApp() {
         console.error('Error loading saved poems:', error);
       }
     };
-    loadSavedPoems();
-  }, []);
 
-  // Save poems to local storage whenever they change
-  useEffect(() => {
     const savePoems = async () => {
       try {
         await localforage.setItem('savedPoems', savedPoems);
@@ -36,6 +32,8 @@ export default function PoetryApp() {
         console.error('Error saving poems:', error);
       }
     };
+
+    loadSavedPoems();
     savePoems();
   }, [savedPoems]);
 
@@ -90,6 +88,7 @@ export default function PoetryApp() {
           onClick={generatePrompt}
           className="mb-6 text-2xl"
           disabled={isGeneratingPrompt}
+          aria-label="Get a Poetry Prompt"
         >
           {isGeneratingPrompt ? "Generating Prompt..." : "Get a Poetry Prompt"}
         </Button>
@@ -109,6 +108,7 @@ export default function PoetryApp() {
                 value={poemText}
                 onChange={(e) => { setPoemText(e.target.value); setFeedback(""); }}
                 className="mb-4 min-h-[200px]"
+                aria-label="Poem Textarea"
               />
 
               {feedback && (
@@ -118,13 +118,14 @@ export default function PoetryApp() {
               )}
 
               <div className="flex justify-end space-x-4">
-                <Button onClick={handleSavePoem}>
+                <Button onClick={handleSavePoem} aria-label="Save Poem">
                   Save Poem
                 </Button>
                 
                 <Button 
                   onClick={() => { setShowEditor(false); setPoemText(""); setFeedback(""); }}
                   className="bg-gray-400 hover:bg-gray-500"
+                  aria-label="Cancel"
                 >
                   Cancel
                 </Button>
@@ -133,6 +134,7 @@ export default function PoetryApp() {
                   <Button
                     onClick={() => setFeedback(validatePoem(poemStyle, poemText))}
                     className="bg-[#437356] hover:bg-[#3a634b]"
+                    aria-label="Validate Style"
                   >
                     Validate Style
                   </Button>
@@ -154,6 +156,7 @@ export default function PoetryApp() {
                 key={index}
                 className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => loadPoem(poem)}
+                aria-label={`Load poem ${index + 1}`}
               >
                 <p className="font-medium text-[#1E4147]">
                   {poem.text.split("\n")[0] || "Untitled"}
@@ -174,4 +177,4 @@ export default function PoetryApp() {
       </footer>
     </div>
   );
-} 
+}
