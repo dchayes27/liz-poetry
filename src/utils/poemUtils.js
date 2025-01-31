@@ -30,6 +30,42 @@ export const validatePoem = (style, poemText) => {
       // Add rhyme scheme validation if desired
       return "This poem has the correct number of lines for a Limerick.";
 
+    case "Ode":
+      if (lines.length < 3) {
+        return "An ode should have at least 3 lines.";
+      }
+      return "This poem has the correct structure for an Ode.";
+
+    case "Villanelle":
+      if (lines.length !== 19) {
+        return "A villanelle should have exactly 19 lines.";
+      }
+      return "This poem has the correct structure for a Villanelle.";
+
+    case "Elegy":
+      if (lines.length < 3) {
+        return "An elegy should have at least 3 lines.";
+      }
+      return "This poem has the correct structure for an Elegy.";
+
+    case "Ballad":
+      if (lines.length < 4) {
+        return "A ballad should have at least 4 lines.";
+      }
+      return "This poem has the correct structure for a Ballad.";
+
+    case "Epigram":
+      if (lines.length !== 2 && lines.length !== 4) {
+        return "An epigram should have either 2 or 4 lines.";
+      }
+      return "This poem has the correct structure for an Epigram.";
+
+    case "Acrostic":
+      if (lines.length < 1) {
+        return "An acrostic should have at least 1 line.";
+      }
+      return "This poem has the correct structure for an Acrostic.";
+
     default:
       return `"${style}" has no strict rules, write freely!`;
   }
@@ -109,4 +145,4 @@ export const POEM_PROMPTS = [
   "Freeze a special moment in time through poetry.",
   "Describe an inner dialogue during a run.",
   "Write about yourself as both hero and villain."
-]; 
+];
