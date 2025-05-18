@@ -6,14 +6,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1E4147',
-        secondary: '#437356',
-        accent: '#F34951',
-        background: '#DCEED1',
-        card: '#FAE3B4',
+        primary: '#1F2937',
+        secondary: '#4B5563',
+        accent: '#2563EB',
+        background: '#F3F4F6',
+        card: '#FFFFFF',
       },
       fontFamily: {
-        comic: ['Comic Neue', 'cursive'],
+        sans: ['Inter', 'sans-serif'],
       },
     },
   },

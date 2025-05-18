@@ -32,11 +32,8 @@ npm start
 - And more!
 
 ### Doom Scale
-The unique doom scale measures the "darkness" of your poetry based on:
-- Word choice
-- Rhyme patterns
-- Word variety
-- Punctuation drama
+The doom scale now reflects how many of your words rhyme with each other. It is
+displayed as the percentage of rhyming words in your poem.
 
 ### Local Storage
 Your poems are automatically saved to your browser's local storage, so they persist between sessions.

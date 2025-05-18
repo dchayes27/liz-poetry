@@ -6,71 +6,59 @@ export const validatePoem = (style, poemText) => {
   const lines = poemText.trim().split("\n").filter(line => line.trim() !== "");
 
   switch (style) {
-    case "Haiku":
+    case "Haiku": {
       if (lines.length !== 3) {
-        return "A haiku should have exactly three lines.";
+        return { valid: false, message: "A haiku should have exactly three lines." };
       }
       const syllableCounts = lines.map(line => syllable(line));
       if (syllableCounts[0] !== 5 || syllableCounts[1] !== 7 || syllableCounts[2] !== 5) {
-        return "Haiku lines should have 5, 7, and 5 syllables respectively.";
+        return { valid: false, message: "Haiku lines should have 5, 7, and 5 syllables respectively." };
       }
-      return "This poem structure looks like a Haiku!";
+      return { valid: true, message: "This poem structure looks like a Haiku!" };
+    }
 
-    case "Sonnet":
+    case "Sonnet": {
       if (lines.length !== 14) {
-        return "A sonnet should have exactly 14 lines.";
+        return { valid: false, message: "A sonnet should have exactly 14 lines." };
       }
       // Add more sophisticated validation for iambic pentameter if desired
-      return "This poem has the correct number of lines for a Sonnet.";
+      return { valid: true, message: "This poem has the correct number of lines for a Sonnet." };
+    }
 
-    case "Limerick":
+    case "Limerick": {
       if (lines.length !== 5) {
-        return "A limerick should have exactly 5 lines.";
+        return { valid: false, message: "A limerick should have exactly 5 lines." };
       }
       // Add rhyme scheme validation if desired
-      return "This poem has the correct number of lines for a Limerick.";
+      return { valid: true, message: "This poem has the correct number of lines for a Limerick." };
+    }
 
     default:
-      return `"${style}" has no strict rules, write freely!`;
+      return { valid: true, message: `"${style}" has no strict rules, write freely!` };
   }
 };
 
 export const calculateDoomScale = (poem) => {
   if (!poem) return 0;
-  
-  const words = poem.toLowerCase().split(/\s+/).filter(word => word !== "");
+
+  const words = poem
+    .toLowerCase()
+    .split(/[^a-zA-Z']+/)
+    .filter(Boolean);
   if (words.length === 0) return 0;
 
-  // Calculate various factors that contribute to "doom"
-  const darkWords = new Set(['dark', 'death', 'doom', 'gloom', 'night', 'shadow', 'black', 'abyss', 'void', 'lost']);
-  const darkWordCount = words.filter(word => darkWords.has(word)).length;
-  
-  // Rhyme detection
-  let rhymeScore = 0;
-  const lastTwoLetters = words.map(word => word.slice(-2));
-  for (let i = 0; i < lastTwoLetters.length; i++) {
-    for (let j = i + 1; j < lastTwoLetters.length; j++) {
-      if (lastTwoLetters[i] && lastTwoLetters[j] && lastTwoLetters[i] === lastTwoLetters[j]) {
-        rhymeScore++;
-      }
-    }
+  const groups = {};
+  for (const word of words) {
+    const key = word.slice(-2);
+    groups[key] = (groups[key] || 0) + 1;
   }
 
-  // Word variety (repetition adds to doom)
-  const wordVarietyScore = 1 - (new Set(words).size / words.length);
-  
-  // Punctuation analysis (more exclamation/question marks = more dramatic = more doom)
-  const dramaticPunctuation = (poem.match(/[!?]/g) || []).length;
-  
-  // Calculate final doom score
-  const darkWordFactor = (darkWordCount / words.length) * 40;
-  const rhymeFactor = (rhymeScore / words.length) * 20;
-  const varietyFactor = wordVarietyScore * 20;
-  const punctuationFactor = Math.min(dramaticPunctuation * 5, 20);
+  let rhymingWords = 0;
+  for (const count of Object.values(groups)) {
+    if (count > 1) rhymingWords += count;
+  }
 
-  const doomScale = darkWordFactor + rhymeFactor + varietyFactor + punctuationFactor;
-  
-  return Math.min(100, Math.max(0, Math.round(doomScale)));
+  return Math.round((rhymingWords / words.length) * 100);
 };
 
 export const POEM_STYLES = [

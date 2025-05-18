@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import localforage from 'localforage';
-import { Button, Textarea, Card, CardContent } from './UIComponents';
+import { Button, Textarea, Card, CardContent, ProgressBar } from './UIComponents';
 import { validatePoem, calculateDoomScale, POEM_STYLES, POEM_PROMPTS } from '../utils/poemUtils';
 
 export default function PoetryApp() {
@@ -57,6 +57,12 @@ export default function PoetryApp() {
       setFeedback("Your poem is empty! Write something to save.");
       return;
     }
+    const { valid, message } = validatePoem(poemStyle, poemText);
+    if (!valid) {
+      setFeedback(message + " Please try again.");
+      return;
+    }
+
     const doom = calculateDoomScale(poemText);
     const newPoem = {
       text: poemText,
@@ -79,13 +85,13 @@ export default function PoetryApp() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#DCEED1] p-8 rounded-3xl shadow-2xl font-['Comic_Sans_MS']">
+    <div className="flex flex-col items-center min-h-screen bg-[#F3F4F6] p-8 rounded-3xl shadow-2xl font-sans">
       <header className="w-full text-center mb-8">
-        <h1 className="text-5xl font-bold text-[#1E4147] font-['Comic_Sans_MS']">Liz-spiration Navigation</h1>
-        <p className="mt-2 text-lg text-[#437356] font-['Comic_Sans_MS']">Your pocket poetry prompt generator and creative space</p>
+        <h1 className="text-5xl font-bold text-[#1F2937] font-sans">Liz-spiration Navigation</h1>
+        <p className="mt-2 text-lg text-[#4B5563] font-sans">Your pocket poetry prompt generator and creative space</p>
       </header>
 
-      <div className="w-3/4 max-w-xl text-center bg-[#FAE3B4] rounded-3xl p-8 shadow-lg mb-8">
+      <div className="w-3/4 max-w-xl text-center bg-white rounded-3xl p-8 shadow-lg mb-8">
         <Button
           onClick={generatePrompt}
           className="mb-6 text-2xl"
@@ -97,11 +103,11 @@ export default function PoetryApp() {
         {showEditor && (
           <Card className="mt-6 p-6">
             <CardContent>
-              <p className="text-xl font-semibold text-[#1E4147] mb-2">Prompt:</p>
-              <p className="italic mb-4 text-[#437356] text-lg">{poemPrompt}</p>
+              <p className="text-xl font-semibold text-[#1F2937] mb-2">Prompt:</p>
+              <p className="italic mb-4 text-[#4B5563] text-lg">{poemPrompt}</p>
 
-              <p className="text-xl font-semibold text-[#1E4147] mb-2">
-                Style: <span className="font-normal italic text-[#437356]">{poemStyle}</span>
+              <p className="text-xl font-semibold text-[#1F2937] mb-2">
+                Style: <span className="font-normal italic text-[#4B5563]">{poemStyle}</span>
               </p>
 
               <Textarea
@@ -112,7 +118,7 @@ export default function PoetryApp() {
               />
 
               {feedback && (
-                <p className={`mt-2 mb-4 text-center ${feedback.startsWith("Poem saved") ? "text-green-600" : "text-[#F34951]"}`}>
+                <p className={`mt-2 mb-4 text-center ${feedback.startsWith("Poem saved") ? "text-green-600" : "text-red-500"}`}>
                   {feedback}
                 </p>
               )}
@@ -131,8 +137,11 @@ export default function PoetryApp() {
                 
                 {poemStyle !== "Free Verse" && poemText.trim() && (
                   <Button
-                    onClick={() => setFeedback(validatePoem(poemStyle, poemText))}
-                    className="bg-[#437356] hover:bg-[#3a634b]"
+                    onClick={() => {
+                      const { message } = validatePoem(poemStyle, poemText);
+                      setFeedback(message);
+                    }}
+                    className="bg-secondary hover:bg-gray-700"
                   >
                     Validate Style
                   </Button>
@@ -143,8 +152,8 @@ export default function PoetryApp() {
         )}
       </div>
 
-      <div className="w-3/4 max-w-xl p-6 mt-8 bg-[#FAE3B4] rounded-3xl shadow-lg">
-        <h2 className="text-3xl font-bold mb-6 text-[#1E4147]">Liz's Poems</h2>
+      <div className="w-3/4 max-w-xl p-6 mt-8 bg-white rounded-3xl shadow-lg">
+        <h2 className="text-3xl font-bold mb-6 text-[#1F2937]">Liz's Poems</h2>
         {savedPoems.length === 0 ? (
           <p className="text-gray-600 italic">No poems saved yet. Start writing!</p>
         ) : (
@@ -155,14 +164,15 @@ export default function PoetryApp() {
                 className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => loadPoem(poem)}
               >
-                <p className="font-medium text-[#1E4147]">
+                <p className="font-medium text-[#1F2937]">
                   {poem.text.split("\n")[0] || "Untitled"}
                 </p>
                 <div className="mt-2 text-sm text-gray-600">
                   <span className="mr-4">{poem.style}</span>
-                  <span>Doom: {poem.doom}</span>
+                  <span>Doom: {poem.doom}%</span>
                   <span className="ml-4">{new Date(poem.date).toLocaleDateString()}</span>
                 </div>
+                <ProgressBar value={poem.doom} className="mt-2" />
               </div>
             ))}
           </div>
