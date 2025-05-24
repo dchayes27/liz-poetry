@@ -14,7 +14,59 @@ export default function PoetryApp() {
   const [sharedPoemData, setSharedPoemData] = useState(null);
   const [isDisplayingSharedPoem, setIsDisplayingSharedPoem] = useState(false);
   const [copiedPoemIdentifier, setCopiedPoemIdentifier] = useState(null); // For "Copied!" feedback
+feature/share-poem-url
   const initialLoadComplete = useRef(false);
+
+  // Effect to parse URL parameters on load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sharedPoem') === 'true') {
+      const text = params.get('text');
+      const style = params.get('style');
+      const prompt = params.get('prompt');
+      const doomStr = params.get('doom');
+      const dateStr = params.get('date');
+
+      // Validate parameters
+      if (!text || !style || !prompt || !doomStr || !dateStr) {
+        console.error('Shared poem URL is missing one or more required parameters.');
+        // Optionally, clear URL params if they are invalid to avoid reload loops
+        // window.history.pushState({}, '', window.location.pathname);
+        return; // Default to normal view
+      }
+
+      const doom = parseInt(doomStr, 10);
+      if (isNaN(doom)) {
+        console.error('Shared poem URL has an invalid "doom" parameter. Must be a number.');
+        return;
+      }
+
+      const date = new Date(decodeURIComponent(dateStr));
+      if (isNaN(date.getTime())) {
+        console.error('Shared poem URL has an invalid "date" parameter. Must be a valid ISO date string.');
+        return;
+      }
+
+      const decodedText = decodeURIComponent(text);
+      const decodedStyle = decodeURIComponent(style);
+      const decodedPrompt = decodeURIComponent(prompt);
+      // Date is already decoded and parsed
+
+      setSharedPoemData({
+        text: decodedText,
+        style: decodedStyle,
+        prompt: decodedPrompt,
+        doom: doom,
+        date: date.toISOString(), // Store as ISO string for consistency
+      });
+      setPoemText(decodedText);
+      setPoemStyle(decodedStyle);
+      setPoemPrompt(decodedPrompt);
+      setIsDisplayingSharedPoem(true);
+      setShowEditor(true);
+    }
+  }, []);
+main
 
   // Effect to parse URL parameters on load
   useEffect(() => {
