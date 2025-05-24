@@ -286,11 +286,11 @@ export default function PoetryApp() {
             <p className="text-gray-600 italic">No poems saved yet. Start writing!</p>
           ) : (
             <div className="space-y-4">
-              {savedPoems.map((poem, index) => (
+              {savedPoems.map((poem) => ( // Removed index from map parameters
                 <div
-                  key={index}
+                  key={poem.date} // Changed key here
                   className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-                  aria-label={`Load poem ${index + 1}`}
+                  aria-label={`Load poem related to date ${poem.date}`} // Adjusted aria-label
                 >
                   <div onClick={() => loadPoem(poem)} className="cursor-pointer">
                     <p className="font-medium text-[#1E4147]">
@@ -308,7 +308,7 @@ export default function PoetryApp() {
                       handleSharePoem(poem);
                     }}
                     className="mt-2 text-sm bg-[#437356] hover:bg-[#3a634b] text-white py-1 px-2 rounded"
-                    aria-label={`Share poem ${index + 1}`}
+                    aria-label={`Share poem related to date ${poem.date}`} // Adjusted aria-label
                   >
                   {copiedPoemIdentifier === poem.date ? "Copied!" : "Share"}
                   </Button>
